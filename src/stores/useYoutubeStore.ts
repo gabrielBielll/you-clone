@@ -198,7 +198,8 @@ export const useYoutubeStore = defineStore('youtube', {
           const videoRaw = response.items[0] as any;
           this.currentVideoDetail = {
             ...videoRaw,
-            duration: videoRaw.contentDetails?.duration || ''
+            duration: videoRaw.contentDetails?.duration || '',
+            statistics: videoRaw.statistics || { viewCount: '0', likeCount: '0', favoriteCount: '0', commentCount: '0' }
           } as any
         } else {
           this.errorMessage = 'Vídeo não encontrado.'

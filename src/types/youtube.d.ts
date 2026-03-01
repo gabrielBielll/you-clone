@@ -31,6 +31,8 @@ export interface YouTubeSearchItem {
     videoId: string;
   };
   snippet: YouTubeVideoSnippet;
+  duration?: string;
+  isShort?: boolean;
 }
 
 export interface YouTubeVideoItem {

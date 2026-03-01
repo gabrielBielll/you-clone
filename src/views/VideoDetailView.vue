@@ -42,6 +42,18 @@ const formatCompactNumber = (num?: string | number) => {
 
 const video = computed(() => store.currentVideoDetail);
 
+const statistics = computed(() => {
+  const vid = video.value as any;
+  return (
+    vid?.statistics || {
+      viewCount: "0",
+      likeCount: "0",
+      favoriteCount: "0",
+      commentCount: "0",
+    }
+  );
+});
+
 const formattedDescription = computed(() => {
   if (!video.value?.snippet.description) return "";
   // Converter quebras de linha em tags <br> para manter o visual nativo do YT
@@ -141,7 +153,7 @@ const formattedDescription = computed(() => {
                 prepend-icon="mdi-thumb-up-outline"
               >
                 <span class="font-weight-bold ml-1">{{
-                  formatCompactNumber(video.statistics.likeCount)
+                  formatCompactNumber(statistics.likeCount)
                 }}</span>
               </v-btn>
 
@@ -176,8 +188,8 @@ const formattedDescription = computed(() => {
           @click="showFullDescription = !showFullDescription"
         >
           <div class="font-weight-bold mb-2">
-            {{ formatCompactNumber(video.statistics.viewCount) }} visualizações
-            • {{ formatDate(video.snippet.publishedAt) }}
+            {{ formatCompactNumber(statistics.viewCount) }} visualizações •
+            {{ formatDate(video.snippet.publishedAt) }}
           </div>
           <div
             class="text-body-2 description-content text-grey-lighten-1"
