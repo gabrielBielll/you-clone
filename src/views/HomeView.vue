@@ -60,16 +60,51 @@ const normalVideos = computed(() => store.videos);
       />
 
       <!-- Espaço para erros globais da API -->
-      <v-alert
+      <!-- Espaço Elegante para Erros (Condicionais) -->
+      <v-container
         v-if="store.errorMessage"
-        type="error"
-        variant="tonal"
-        class="mb-6 mx-auto"
-        closable
-        max-width="800"
+        class="fill-height d-flex flex-column justify-center align-center text-center mt-12 py-12"
       >
-        {{ store.errorMessage }}
-      </v-alert>
+        <template v-if="store.errorMessage === 'LIMITE_COTA'">
+          <v-icon
+            icon="mdi-account-clock"
+            color="warning"
+            size="120"
+            class="mb-6 opacity-70"
+          ></v-icon>
+          <h2 class="text-h4 font-weight-bold mb-2 text-grey-lighten-1">
+            Cota Mísseis Esgotada 🚀
+          </h2>
+          <p class="text-body-1 text-grey mb-6" style="max-width: 600px">
+            A chave da API (gratuita) chegou ao limite de requisições fornecidas
+            para hoje. A interface continuará pronta para operar suas pesquisas
+            amanhã!
+          </p>
+        </template>
+        <template v-else>
+          <v-icon
+            icon="mdi-youtube-tv"
+            color="grey-darken-2"
+            size="120"
+            class="mb-6 opacity-50"
+          ></v-icon>
+          <h2 class="text-h4 font-weight-bold mb-2 text-grey-lighten-1">
+            Erro de Conexão
+          </h2>
+          <p class="text-body-1 text-grey mb-6" style="max-width: 600px">
+            {{ store.errorMessage }}
+          </p>
+          <v-btn
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-refresh"
+            @click="handleSearch(searchQuery)"
+            rounded="pill"
+          >
+            Tentar Novamente
+          </v-btn>
+        </template>
+      </v-container>
 
       <!-- Category Filter Chips -->
       <v-slide-group v-if="store.hasSearched" class="mb-4" show-arrows>

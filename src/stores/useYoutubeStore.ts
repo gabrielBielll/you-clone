@@ -73,8 +73,13 @@ export const useYoutubeStore = defineStore('youtube', {
         this.nextPageToken = data.nextPageToken
         this.nextShortPageToken = undefined // reset independent pagination token
       } catch (error: any) {
-        this.errorMessage = error.response?.data?.error?.message || 'Erro ao buscar vídeos. Verifique sua cota da API ou conexão.'
-        console.error('Errror on search', error)
+        const message = error.response?.data?.error?.message || '';
+        if (message.includes('quota') || message.includes('exceeded')) {
+          this.errorMessage = 'LIMITE_COTA';
+        } else {
+          this.errorMessage = message || 'Erro ao buscar vídeos. Verifique sua conexão e tente novamente.';
+        }
+        console.error('Erro na pesquisa:', error)
       } finally {
         this.isLoading = false
       }
@@ -135,7 +140,8 @@ export const useYoutubeStore = defineStore('youtube', {
           if(!this.nextPageToken) break;
         }
       } catch (error: any) {
-        this.errorMessage = error.response?.data?.error?.message || 'Erro ao carregar mais vídeos'
+        const message = error.response?.data?.error?.message || '';
+        this.errorMessage = (message.includes('quota') || message.includes('exceeded')) ? 'LIMITE_COTA' : (message || 'Erro de conexão ao carregar mais vídeos');
       } finally {
         this.isLoading = false
       }
@@ -202,11 +208,12 @@ export const useYoutubeStore = defineStore('youtube', {
             statistics: videoRaw.statistics || { viewCount: '0', likeCount: '0', favoriteCount: '0', commentCount: '0' }
           } as any
         } else {
-          this.errorMessage = 'Vídeo não encontrado.'
+          this.errorMessage = 'Vídeo não encontrado.';
           this.currentVideoDetail = null
         }
       } catch (error: any) {
-        this.errorMessage = error.response?.data?.error?.message || 'Erro ao buscar detalhes do vídeo.'
+        const message = error.response?.data?.error?.message || '';
+        this.errorMessage = (message.includes('quota') || message.includes('exceeded')) ? 'LIMITE_COTA' : (message || 'Erro de rede ao buscar detalhes');
         this.currentVideoDetail = null
       } finally {
         this.isLoading = false
