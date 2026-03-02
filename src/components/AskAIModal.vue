@@ -139,7 +139,7 @@ const askQuestion = async (question: string) => {
         >
           <!-- Default AI Welcome -->
           <div class="d-flex mb-6 align-start">
-            <v-icon color="#a78ce6" size="24" class="mr-3">mdi-sparkles</v-icon>
+            <v-icon color="#a78ce6" size="24" class="mr-3">mdi-google-gemini</v-icon>
             <div>
               <p class="mb-3 text-body-1 text-grey-lighten-2 line-height-1-4">
                 Olá! O conteúdo que você está assistindo despertou sua
@@ -181,7 +181,7 @@ const askQuestion = async (question: string) => {
               size="24"
               class="mr-3 mt-1 align-self-start flex-shrink-0"
             >
-              mdi-sparkles
+              mdi-google-gemini
             </v-icon>
             <div
               class="py-3 px-4 rounded-xl text-body-1 message-bubble"
@@ -200,7 +200,7 @@ const askQuestion = async (question: string) => {
           <!-- Typing Indicator -->
           <div v-if="isTyping" class="d-flex mb-4 align-start">
             <v-icon color="#a78ce6" size="24" class="mr-3 mt-1"
-              >mdi-sparkles</v-icon
+              >mdi-google-gemini</v-icon
             >
             <div class="py-3 text-grey-lighten-1">Processando resposta...</div>
           </div>
@@ -245,7 +245,7 @@ const askQuestion = async (question: string) => {
             >
               Criado com
               <v-icon size="small" class="mx-1" color="#a78ce6"
-                >mdi-sparkles</v-icon
+                >mdi-google-gemini</v-icon
               >
               Gemini ↗
             </div>

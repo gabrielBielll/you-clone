@@ -147,40 +147,30 @@ const formattedDescription = computed(() => {
             <!-- Botão de IA "Perguntar" (Gemini) -->
             <v-btn
               variant="tonal"
-              icon="mdi-sparkles"
-              size="small"
+              icon="mdi-google-gemini"
               class="mr-2"
               color="#b594ff"
               style="background-color: rgba(181, 148, 255, 0.15) !important"
               @click="showAIModal = true"
             ></v-btn>
 
-            <div
-              class="like-dislike-group d-flex align-center rounded-pill bg-surface-variant px-1 py-1 mr-2"
-            >
-              <!-- Botão Like Real -->
+            <!-- Grupo de Like / Dislike idêntico ao "Compartilhar" -->
+            <v-btn-group variant="tonal" divided rounded="pill" class="mr-2 align-center">
               <v-btn
-                variant="text"
-                rounded="pill"
-                size="small"
                 prepend-icon="mdi-thumb-up-outline"
+                class="px-4"
               >
                 <span class="font-weight-bold ml-1">{{
                   formatCompactNumber(statistics.likeCount)
                 }}</span>
               </v-btn>
 
-              <v-divider vertical class="mx-1 my-2"></v-divider>
-
-              <!-- Botão Dislike Mockado (a pedido do usuário) -->
               <v-btn
-                variant="text"
-                rounded="pill"
-                size="small"
                 icon="mdi-thumb-down-outline"
+                class="px-4"
               >
               </v-btn>
-            </div>
+            </v-btn-group>
 
             <v-btn
               variant="tonal"
