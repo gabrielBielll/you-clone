@@ -69,7 +69,6 @@ const rules = {
         rounded="pill"
         density="comfortable"
         bg-color="surface"
-        prepend-inner-icon="mdi-magnify"
         append-inner-icon="mdi-microphone"
         class="search-input"
         hide-details="auto"
