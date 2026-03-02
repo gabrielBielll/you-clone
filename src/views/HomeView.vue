@@ -38,7 +38,10 @@ const loadMore = () => {
 
 // Show skeleton only on initial load (when there are no videos yet)
 const showInitialSkeletons = computed(
-  () => store.isLoading && store.videos.length === 0,
+  () =>
+    store.isLoading &&
+    store.videos.length === 0 &&
+    store.shortVideos.length === 0,
 );
 // Show load more button if there's a token and not currently loading the first page
 const canLoadMore = computed(() => !!store.nextPageToken);
@@ -145,90 +148,111 @@ const normalVideos = computed(() => store.videos);
 
         <!-- Vídeos Filtrados -->
         <template v-else>
-          <!-- Bloco 1: Primeiros 4 vídeos Normais -->
-          <v-col
-            v-for="video in normalVideos.slice(0, 4)"
-            :key="`n1-${video.id.videoId}`"
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-            xl="2"
-          >
-            <VideoCard :video="video" />
-          </v-col>
+          <!-- Modo ABA SHORTS: Mostrar Shorts em Grid Limpo -->
+          <template v-if="store.activeCategory === 'Shorts'">
+            <v-col
+              v-for="video in shortVideos"
+              :key="`shorts-grid-${video.id.videoId}`"
+              cols="12"
+              sm="4"
+              md="3"
+              lg="2"
+              xl="2"
+              class="d-flex justify-center"
+            >
+              <ShortVideoCard :video="video" />
+            </v-col>
+          </template>
 
-          <!-- Bloco 2: Carrossel de Shorts (Prateleira de Breakpoint 100% de largura) -->
-          <v-col
-            cols="12"
-            v-if="shortVideos.length > 0"
-            class="py-6 px-0 pa-sm-3"
-          >
-            <div class="d-flex align-center mb-4 px-2">
-              <v-icon color="red" size="x-large" class="mr-2"
-                >mdi-play-box-multiple</v-icon
-              >
-              <h2 class="text-h5 font-weight-bold">Shorts</h2>
-            </div>
+          <template v-else>
+            <!-- Bloco 1: Primeiros 4 vídeos Normais -->
+            <v-col
+              v-for="video in normalVideos.slice(0, 4)"
+              :key="`n1-${video.id.videoId}`"
+              cols="12"
+              sm="6"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <VideoCard :video="video" />
+            </v-col>
 
-            <v-slide-group show-arrows>
-              <v-slide-group-item
-                v-for="video in shortVideos"
-                :key="`s-${video.id.videoId}`"
-              >
-                <!-- Nosso novo componente com Aspect Ratio vertical -->
-                <ShortVideoCard :video="video" />
-              </v-slide-group-item>
-
-              <!-- Botão Dinâmico "Carregar Mais Shorts (Paginação com Token Independente Sênior)" -->
-              <v-slide-group-item>
-                <div
-                  class="d-flex align-center justify-center mx-2"
-                  style="width: 160px"
+            <!-- Bloco 2: Carrossel de Shorts (Prateleira de Breakpoint 100% de largura) -->
+            <v-col
+              cols="12"
+              v-if="shortVideos.length > 0 && store.activeCategory === 'Tudo'"
+              class="py-6 px-0 pa-sm-3"
+            >
+              <div class="d-flex align-center mb-4 px-2">
+                <v-icon color="red" size="x-large" class="mr-2"
+                  >mdi-play-box-multiple</v-icon
                 >
-                  <v-btn
-                    variant="tonal"
-                    color="grey-darken-1"
-                    height="96%"
-                    width="100%"
-                    rounded="lg"
-                    @click="store.loadMoreShorts()"
-                    :loading="store.isShortsLoading"
+                <h2 class="text-h5 font-weight-bold">Shorts</h2>
+              </div>
+
+              <v-slide-group show-arrows>
+                <v-slide-group-item
+                  v-for="video in shortVideos"
+                  :key="`s-${video.id.videoId}`"
+                >
+                  <!-- Nosso novo componente com Aspect Ratio vertical -->
+                  <ShortVideoCard :video="video" />
+                </v-slide-group-item>
+
+                <!-- Botão Dinâmico "Carregar Mais Shorts (Paginação com Token Independente Sênior)" -->
+                <v-slide-group-item>
+                  <div
+                    class="d-flex align-center justify-center mx-2"
+                    style="width: 160px"
                   >
-                    <div class="d-flex flex-column align-center py-4">
-                      <v-icon size="x-large" class="mb-2"
-                        >mdi-chevron-right-circle-outline</v-icon
-                      >
-                      <span class="text-caption text-wrap"
-                        >Mostrar<br />Mais</span
-                      >
-                    </div>
-                  </v-btn>
-                </div>
-              </v-slide-group-item>
-            </v-slide-group>
+                    <v-btn
+                      variant="tonal"
+                      color="grey-darken-1"
+                      height="96%"
+                      width="100%"
+                      rounded="lg"
+                      @click="store.loadMoreShorts()"
+                      :loading="store.isShortsLoading"
+                    >
+                      <div class="d-flex flex-column align-center py-4">
+                        <v-icon size="x-large" class="mb-2"
+                          >mdi-chevron-right-circle-outline</v-icon
+                        >
+                        <span class="text-caption text-wrap"
+                          >Mostrar<br />Mais</span
+                        >
+                      </div>
+                    </v-btn>
+                  </div>
+                </v-slide-group-item>
+              </v-slide-group>
 
-            <v-divider class="mt-8 mb-2 border-opacity-25"></v-divider>
-          </v-col>
+              <v-divider class="mt-8 mb-2 border-opacity-25"></v-divider>
+            </v-col>
 
-          <!-- Bloco 3: Restante dos Vídeos Normais da paginação -->
-          <v-col
-            v-for="video in normalVideos.slice(4)"
-            :key="`n2-${video.id.videoId}`"
-            cols="12"
-            sm="6"
-            md="4"
-            lg="3"
-            xl="2"
-          >
-            <VideoCard :video="video" />
-          </v-col>
+            <!-- Bloco 3: Restante dos Vídeos Normais da paginação -->
+            <v-col
+              v-for="video in normalVideos.slice(4)"
+              :key="`n2-${video.id.videoId}`"
+              cols="12"
+              sm="6"
+              md="4"
+              lg="3"
+              xl="2"
+            >
+              <VideoCard :video="video" />
+            </v-col>
+          </template>
         </template>
 
         <!-- Empty State (Sem resultados) -->
         <v-col
           v-if="
-            !store.isLoading && store.videos.length === 0 && !store.errorMessage
+            !store.isLoading &&
+            store.videos.length === 0 &&
+            store.shortVideos.length === 0 &&
+            !store.errorMessage
           "
           cols="12"
           class="text-center py-10"
@@ -247,7 +271,10 @@ const normalVideos = computed(() => store.videos);
 
       <!-- Paginação / Carregar Mais -->
       <div
-        v-if="canLoadMore && store.videos.length > 0"
+        v-if="
+          canLoadMore &&
+          (store.videos.length > 0 || store.shortVideos.length > 0)
+        "
         class="d-flex justify-center mt-8 mb-4"
       >
         <v-btn

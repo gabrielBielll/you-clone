@@ -33,10 +33,14 @@ export const useYoutubeStore = defineStore('youtube', {
       this.isViewingHistory = false
 
       // Monta query enviada pra API anexando a categoria
-      const apiQuery = category !== 'Tudo' ? `${query} ${category}` : query;
+      const apiQuery = category !== 'Tudo' && category !== 'Shorts' ? `${query} ${category}` : query;
 
       try {
-        const data = await YoutubeService.searchVideos(apiQuery)
+        const data = await YoutubeService.searchVideos(
+          apiQuery,
+          undefined,
+          category === 'Shorts' ? 'short' : undefined
+        )
         
         let fetchedVideos = data.items || []
 
@@ -89,14 +93,23 @@ export const useYoutubeStore = defineStore('youtube', {
       if (!this.nextPageToken || this.isLoading || this.isViewingHistory) return
 
       this.isLoading = true
-      const apiQuery = this.activeCategory !== 'Tudo' ? `${this.searchQuery} ${this.activeCategory}` : this.searchQuery;
+      const apiQuery = this.activeCategory !== 'Tudo' && this.activeCategory !== 'Shorts' ? `${this.searchQuery} ${this.activeCategory}` : this.searchQuery;
 
       let newNormalVideosCount = 0;
+      let newShortVideosCount = 0;
 
       try {
-        // Laço Sênior: Força a API paginar silenciosamente até juntar pelo menos 6 vídeos Grandes!
-        while (newNormalVideosCount < 6 && this.nextPageToken) {
-          const data = await YoutubeService.searchVideos(apiQuery, this.nextPageToken)
+        // Laço Sênior: Força a API paginar silenciosamente até juntar vídeos suficientes!
+        while (
+          ((this.activeCategory !== 'Shorts' && newNormalVideosCount < 6) ||
+           (this.activeCategory === 'Shorts' && newShortVideosCount < 12))
+          && this.nextPageToken
+        ) {
+          const data = await YoutubeService.searchVideos(
+            apiQuery,
+            this.nextPageToken,
+            this.activeCategory === 'Shorts' ? 'short' : undefined
+          )
           let fetchedVideos = data.items || []
 
           if (fetchedVideos.length > 0) {
@@ -135,6 +148,7 @@ export const useYoutubeStore = defineStore('youtube', {
           });
 
           newNormalVideosCount += newNormal.length;
+          newShortVideosCount += newShorts.length;
           this.nextPageToken = data.nextPageToken;
 
           if(!this.nextPageToken) break;
@@ -151,7 +165,7 @@ export const useYoutubeStore = defineStore('youtube', {
       if (this.isShortsLoading || this.isViewingHistory) return
       this.isShortsLoading = true
 
-      const apiQuery = this.activeCategory !== 'Tudo' ? `${this.searchQuery} ${this.activeCategory}` : this.searchQuery;
+      const apiQuery = this.activeCategory !== 'Tudo' && this.activeCategory !== 'Shorts' ? `${this.searchQuery} ${this.activeCategory}` : this.searchQuery;
 
       try {
         // Envia flag 'short' para a pesquisa exclusiva de shorts e usa token independente
