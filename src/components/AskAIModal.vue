@@ -44,11 +44,13 @@ const askQuestion = async (question: string) => {
   userQuestion.value = "";
   scrollToBottom();
 
-  const apiKey =
-    import.meta.env.VITE_GEMINI_API_KEY || import.meta.env.VITE_YOUTUBE_API_KEY;
+  const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
 
   if (!apiKey) {
-    messages.value.push({ role: "ai", text: "Chave de API não configurada." });
+    messages.value.push({
+      role: "ai",
+      text: "Chave de API do Gemini não configurada. Por favor, adicione a sua chave no arquivo .env como VITE_GEMINI_API_KEY=sua-chave para que eu possa funcionar corretamente!",
+    });
     isTyping.value = false;
     scrollToBottom();
     return;
@@ -92,7 +94,7 @@ const askQuestion = async (question: string) => {
   } catch (err: any) {
     messages.value.push({
       role: "ai",
-      text: `Desculpe, ocorreu um erro ao consultar a IA. Se estiver usando a chave do youtube, lembre-se de configurar VITE_GEMINI_API_KEY no '.env'. Erro: ${err.message}`,
+      text: `Desculpe, ocorreu um erro ao consultar a IA. A chave VITE_GEMINI_API_KEY pode estar inválida ou sem as cotas ativas no Google AI Studio. Erro: ${err.message}`,
     });
   } finally {
     isTyping.value = false;
