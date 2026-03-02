@@ -33,10 +33,15 @@ const goToVideo = () => {
     <div class="thumbnail-wrapper position-relative">
       <!-- Short style uses 9/16 Vertical Aspect Ratio. We use 'cover' to crop perfectly -->
       <v-img
-        :src="video.snippet.thumbnails.medium.url"
+        :src="
+          video.snippet.thumbnails.high?.url ||
+          video.snippet.thumbnails.medium?.url ||
+          video.snippet.thumbnails.default?.url
+        "
         class="rounded-lg thumbnail-img bg-surface-variant"
         cover
-        aspect-ratio="9/16"
+        height="284"
+        :aspect-ratio="9 / 16"
       >
         <template v-slot:placeholder>
           <div class="d-flex align-center justify-center fill-height">
