@@ -38,6 +38,26 @@ const rules = {
 
 <template>
   <div class="search-container" :class="{ 'is-searched': hasSearched }">
+    <!-- Hero Background Animation State -->
+    <div class="hero-bg" v-if="!hasSearched"></div>
+    <div class="hero-gradient" v-if="!hasSearched"></div>
+
+    <!-- Hero Text inspired by Netflix -->
+    <div v-if="!hasSearched" class="hero-text text-white text-center px-4">
+      <h1
+        class="text-h3 text-md-h2 font-weight-black mb-4"
+        style="line-height: 1.2"
+      >
+        Vídeos, shorts e muito<br />mais, sem limites
+      </h1>
+      <h2 class="text-h6 text-md-h5 font-weight-regular mb-6">
+        Assista quando quiser. Aprenda o que quiser.
+      </h2>
+      <p class="text-body-1 font-weight-medium mb-6">
+        Quer assistir? Digite um termo de busca abaixo para iniciar.
+      </p>
+    </div>
+
     <v-form @submit.prevent="submitSearch" class="search-form">
       <v-text-field
         v-model="localQuery"
@@ -77,12 +97,51 @@ const rules = {
 <style scoped>
 .search-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
   transition: all 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
   /* Initial state: Center of the screen */
   height: 80vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../assets/hero_bg.png");
+  background-size: cover;
+  background-position: center;
+  z-index: 0;
+  opacity: 0.6;
+  filter: blur(2px) contrast(1.1);
+  transform: scale(1.05); /* Prevents blur bleeding edges */
+}
+
+.hero-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(18, 18, 18, 0.6) 0%,
+    rgba(18, 18, 18, 0.2) 40%,
+    rgba(18, 18, 18, 1) 100%
+  );
+  z-index: 1;
+}
+
+.hero-text {
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
 }
 
 .search-container.is-searched {
@@ -96,6 +155,7 @@ const rules = {
   width: 100%;
   max-width: 650px;
   position: relative;
+  z-index: 2;
   transition: transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
