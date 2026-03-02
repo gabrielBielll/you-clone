@@ -182,7 +182,7 @@ const formattedDescription = computed(() => {
 
         <!-- Reusable Video Description Box -->
         <v-card
-          color="surface-variant"
+          color="secondary"
           variant="flat"
           class="rounded-xl pa-4 description-card cursor-pointer"
           @click="showFullDescription = !showFullDescription"
