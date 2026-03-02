@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useYoutubeStore } from "../stores/useYoutubeStore";
 import VideoComments from "../components/VideoComments.vue";
+import AskAIModal from "../components/AskAIModal.vue";
 
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +11,7 @@ const store = useYoutubeStore();
 
 const videoId = route.params.id as string;
 const showFullDescription = ref(false);
+const showAIModal = ref(false);
 
 onMounted(() => {
   store.loadVideoDetail(videoId);
@@ -142,6 +144,17 @@ const formattedDescription = computed(() => {
           </div>
 
           <div class="actions-group d-flex align-center">
+            <!-- Botão de IA "Perguntar" (Gemini) -->
+            <v-btn
+              variant="tonal"
+              icon="mdi-sparkles"
+              size="small"
+              class="mr-2"
+              color="#b594ff"
+              style="background-color: rgba(181, 148, 255, 0.15) !important"
+              @click="showAIModal = true"
+            ></v-btn>
+
             <div
               class="like-dislike-group d-flex align-center rounded-pill bg-surface-variant px-1 py-1 mr-2"
             >
@@ -207,6 +220,9 @@ const formattedDescription = computed(() => {
         <VideoComments :videoId="videoId" />
       </v-col>
     </v-row>
+
+    <!-- Gemini AI Modal -->
+    <AskAIModal v-if="video" v-model="showAIModal" :videoInfo="video.snippet" />
   </v-container>
 </template>
 
