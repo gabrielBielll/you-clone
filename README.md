@@ -43,6 +43,8 @@ npm run test
 
 ## 🛠️ Relatório Técnico & Arquitetura (Visão Sênior)
 
+> **💡 Novidade:** Preparamos um documento bônus para comprovar o raciocínio por trás da arquitetura. Acesse o nosso [Hands-on Tutorial & Case Study](HANDS_ON_TUTORIAL.md) para explorar o passo a passo da construção técnica do zero, recheado com trechos de código explicativos!
+
 Visando um código de fácil manutenção, tipado, testável e de alta performance, baseamos o desenvolvimento nas seguintes premissas e tecnologias:
 
 ### Stack Tecnológico:
