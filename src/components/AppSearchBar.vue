@@ -172,7 +172,32 @@ const rules = {
 }
 
 @media (max-width: 600px) {
-  .search-form {
+  .search-container:not(.is-searched) {
+    /* Garante que o container use ocupe a tela toda no mobile */
+    height: calc(100vh - 64px);
+    display: block !important;
+  }
+  
+  .search-container:not(.is-searched) .hero-text {
+    position: absolute;
+    /* Coloca o texto logo acima do meio da tela. Subimos mais 48px para compensar o v-main/padding */
+    bottom: calc(50% + 40px + 48px);
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .search-container:not(.is-searched) .search-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    /* Compensamos os 48px de deslocamento do header e padding do container */
+    transform: translate(-50%, calc(-50% - 48px)) !important;
+    width: 100%;
+    padding: 0 16px;
+    margin: 0 !important;
+  }
+
+  .search-container.is-searched .search-form {
     padding: 0 16px;
   }
 }
