@@ -1,7 +1,7 @@
 import { setActivePinia, createPinia } from 'pinia'
 import { describe, it, expect, beforeEach, vi, type Mock } from 'vitest'
 import { useYoutubeStore } from './useYoutubeStore'
-import { YoutubeService } from '../services/youtube.service'
+import { container } from '../di'
 
 const localStorageMock = (() => {
   let store: Record<string, string> = {};
@@ -13,13 +13,15 @@ const localStorageMock = (() => {
 })();
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
-// Mock the YoutubeService entirely
-vi.mock('../services/youtube.service', () => {
+// Mock the DI Container
+vi.mock('../di', () => {
   return {
-    YoutubeService: {
-      searchVideos: vi.fn(),
-      getVideoDetails: vi.fn(),
-      getVideosDuration: vi.fn() // adicionado para suporte dos batches
+    container: {
+      youtubeRepository: {
+        searchVideos: vi.fn(),
+        getVideoDetails: vi.fn(),
+        getVideosDuration: vi.fn()
+      }
     }
   }
 })
@@ -39,9 +41,9 @@ describe('YouTube Store', () => {
       pageInfo: { totalResults: 1, resultsPerPage: 1 }
     }
     
-    ;(YoutubeService.searchVideos as Mock).mockResolvedValue(mockResponse)
+    ;(container.youtubeRepository.searchVideos as Mock).mockResolvedValue(mockResponse)
     // mock safe das durações vazias pra impedir undefined destructs
-    ;(YoutubeService.getVideosDuration as Mock).mockResolvedValue({ items: [] })
+    ;(container.youtubeRepository.getVideosDuration as Mock).mockResolvedValue({ items: [] })
 
     await store.search('vuejs')
 
@@ -67,9 +69,9 @@ describe('YouTube Store', () => {
       pageInfo: { totalResults: 2, resultsPerPage: 1 }
     }
     
-    ;(YoutubeService.searchVideos as Mock).mockResolvedValue(mockResponsePage2)
+    ;(container.youtubeRepository.searchVideos as Mock).mockResolvedValue(mockResponsePage2)
     // mock batch
-    ;(YoutubeService.getVideosDuration as Mock).mockResolvedValue({ items: [] })
+    ;(container.youtubeRepository.getVideosDuration as Mock).mockResolvedValue({ items: [] })
 
     await store.loadMore()
 
@@ -86,7 +88,7 @@ describe('YouTube Store', () => {
       response: { data: { error: { message: 'Quota Exceeded' } } }
     }
     
-    ;(YoutubeService.searchVideos as Mock).mockRejectedValue(mockError)
+    ;(container.youtubeRepository.searchVideos as Mock).mockRejectedValue(mockError)
 
     await store.search('vuejs')
 

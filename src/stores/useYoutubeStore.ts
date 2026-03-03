@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { YoutubeService } from '../services/youtube.service'
+import { container } from '../di'
 import type { YouTubeSearchItem, YouTubeVideoItem } from '../types/youtube'
 
 export const useYoutubeStore = defineStore('youtube', {
@@ -36,7 +36,7 @@ export const useYoutubeStore = defineStore('youtube', {
       const apiQuery = category !== 'Tudo' && category !== 'Shorts' ? `${query} ${category}` : query;
 
       try {
-        const data = await YoutubeService.searchVideos(
+        const data = await container.youtubeRepository.searchVideos(
           apiQuery,
           undefined,
           category === 'Shorts' ? 'short' : undefined
@@ -51,7 +51,7 @@ export const useYoutubeStore = defineStore('youtube', {
 
           if (videoIds.length > 0) {
             try {
-              const batchDetails = await YoutubeService.getVideosDuration(videoIds);
+              const batchDetails = await container.youtubeRepository.getVideosDuration(videoIds);
               const durationsMap: Record<string, { duration: string, isShort: boolean }> = {};
               batchDetails.items.forEach((v: any) => {
                 if (v.id && v.contentDetails?.duration) {
@@ -105,7 +105,7 @@ export const useYoutubeStore = defineStore('youtube', {
            (this.activeCategory === 'Shorts' && newShortVideosCount < 12))
           && this.nextPageToken
         ) {
-          const data = await YoutubeService.searchVideos(
+          const data = await container.youtubeRepository.searchVideos(
             apiQuery,
             this.nextPageToken,
             this.activeCategory === 'Shorts' ? 'short' : undefined
@@ -117,7 +117,7 @@ export const useYoutubeStore = defineStore('youtube', {
 
             if (videoIds.length > 0) {
               try {
-                const batchDetails = await YoutubeService.getVideosDuration(videoIds);
+                const batchDetails = await container.youtubeRepository.getVideosDuration(videoIds);
                 const durationsMap: Record<string, { duration: string, isShort: boolean }> = {};
                 batchDetails.items.forEach((v: any) => {
                   if (v.id && v.contentDetails?.duration) {
@@ -169,7 +169,7 @@ export const useYoutubeStore = defineStore('youtube', {
 
       try {
         // Envia flag 'short' para a pesquisa exclusiva de shorts e usa token independente
-        const data = await YoutubeService.searchVideos(apiQuery, this.nextShortPageToken, 'short')
+        const data = await container.youtubeRepository.searchVideos(apiQuery, this.nextShortPageToken, 'short')
         let fetchedVideos = data.items || []
 
         if (fetchedVideos.length > 0) {
@@ -177,7 +177,7 @@ export const useYoutubeStore = defineStore('youtube', {
 
           if (videoIds.length > 0) {
             try {
-              const batchDetails = await YoutubeService.getVideosDuration(videoIds);
+              const batchDetails = await container.youtubeRepository.getVideosDuration(videoIds);
               const durationsMap: Record<string, { duration: string, isShort: boolean }> = {};
               batchDetails.items.forEach((v: any) => {
                 if (v.id && v.contentDetails?.duration) {
@@ -213,7 +213,7 @@ export const useYoutubeStore = defineStore('youtube', {
       this.errorMessage = null
       
       try {
-        const response = await YoutubeService.getVideoDetails(videoId)
+        const response = await container.youtubeRepository.getVideoDetails(videoId)
         if (response.items && response.items.length > 0) {
           const videoRaw = response.items[0] as any;
           this.currentVideoDetail = {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { YoutubeService } from "../services/youtube.service";
+import { container } from "../di";
 import type { YouTubeCommentItem } from "../types/youtube";
 
 const props = defineProps<{
@@ -20,7 +20,7 @@ const loadComments = async () => {
   isDisabled.value = false;
 
   try {
-    const data = await YoutubeService.getVideoComments(props.videoId);
+    const data = await container.youtubeRepository.getVideoComments(props.videoId);
     comments.value = data.items || [];
   } catch (error: any) {
     const { status, data } = error.response || {};
