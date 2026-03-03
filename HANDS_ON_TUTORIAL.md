@@ -2,11 +2,11 @@
 
 Bem-vindo ao guia de construção passo a passo deste projeto! Este documento detalha as decisões de engenharia, os principais códigos e o fluxo de raciocínio que deram origem ao clone do YouTube, atendendo a requisitos modernos e escaláveis. Você pode seguir este tutorial para entender como a aplicação foi estruturada desde a sua fundação.
 
-## Passo 1: Inicializando o Projeto (Vite + Vue 3 + TypeScript)
+## 1. Inicializando o Projeto (Vite + Vue 3 + TypeScript)
 
-Para garantir a melhor performance, carregamento instantâneo de módulos (HMR) e DX (Developer Experience) moderna, nós evitamos CLI antigos baseados em Webpack (como o tradicional Vue CLI ou o CRA).
+Para garantir a melhor performance, carregamento instantâneo de módulos (HMR) e DX (Developer Experience) moderna, eu evitei CLI antigos baseados em Webpack (como o tradicional Vue CLI ou o CRA).
 
-Utilizamos o **Vite**, o build-tool de nova geração criado pelo próprio autor do Vue:
+Utilizei o **Vite**, o build-tool de nova geração criado pelo próprio autor do Vue:
 
 ```bash
 npm create vite@latest clone-youtube -- --template vue-ts
@@ -14,11 +14,11 @@ cd clone-youtube
 npm install
 ```
 
-## Passo 2: Configurando o Vuetify 3 (Material Design)
+## 2. Configurando o Vuetify 3 (Material Design)
 
-Para seguir o **Google Material Design** de maneira consistente, e visando não criar CSS puramente do zero sem padronização, optou-se por utilizar o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhamos um motor de grid e acessibilidade imbatíveis.
+Para seguir o **Google Material Design** de maneira consistente, e visando não criar CSS puramente do zero sem padronização, optei por utilizar o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhei um motor de grid e acessibilidade imbatíveis.
 
-No arquivo `src/plugins/vuetify.ts`, injetamos globalmente nosso layout forçando o **Dark Mode** com a verdadeira paleta de cores do YouTube real:
+No arquivo `src/plugins/vuetify.ts`, injetei globalmente o layout forçando o **Dark Mode** com a verdadeira paleta de cores do YouTube real:
 
 ```typescript
 import "vuetify/styles";
@@ -44,11 +44,11 @@ export default createVuetify({
 });
 ```
 
-## Passo 3: Engenharia de API (Axios + Interceptors)
+## 3. Engenharia de API (Axios + Interceptors)
 
-Num contexto profissional, as chaves de API jamais devem "passear" soltas pela View ou pela Store. Centralizamos as requisições em um serviço base (`src/services/api.ts`) provido pelo Axios.
+Num contexto profissional, as chaves de API jamais devem "passear" soltas pela View ou pela Store. Centralizei as requisições em um serviço base (`src/services/api.ts`) provido pelo Axios.
 
-A mágica é usar um _Interceptor_ dinâmico. Toda chamada feita pelo nosso Front-End injeta silenciosamente a nossa Key segura a partir do ambiente local (`.env`), deixando as rotinas de busca completamente limpas.
+A mágica é usar um _Interceptor_ dinâmico. Toda chamada feita pelo Front-End injeta silenciosamente a Key segura a partir do ambiente local (`.env`), deixando as rotinas de busca completamente limpas.
 
 ```typescript
 import axios from "axios";
@@ -68,9 +68,9 @@ api.interceptors.request.use((config) => {
 export default api;
 ```
 
-## Passo 4: O Coração - Gerenciando Estado com Pinia
+## 4. O Coração - Gerenciando Estado com Pinia
 
-Arquitetura sólida depende de gerenciamento de estado. Com o uso do **Pinia** (O Store que substituiu o aposentado Vuex), criamos uma base blindada no arquivo secundário central: `src/stores/useYoutubeStore.ts`.
+Arquitetura sólida depende de gerenciamento de estado. Com o uso do **Pinia** (O Store que substituiu o aposentado Vuex), criei uma base blindada no arquivo secundário central: `src/stores/useYoutubeStore.ts`.
 
 Este Store faz chamadas HTTP, engorda o _array_ de vídeos usando "paginação infinita" do YouTube (`nextPageToken`), e o mais importante: Cuida primorosamente do intercepto de excesso de consumo da sua cota Google Grátis (Limitação de API).
 
@@ -106,11 +106,11 @@ export const useYoutubeStore = defineStore("youtube", {
 });
 ```
 
-## Passo 5: UX Avançada: Hero Style Netflix & Animação Css
+## 5. UX Avançada: Hero Style Netflix & Animação Css
 
 Um desafio interessante de UI implementado neste projeto foi: Ter o campo de pesquisa centralizado no meio da tela que, após uma busca, se desloca de forma fluida para o topo.
 
-Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos uma "Sensação Especial". Se não existe pesquisa, ocupamos o vazio da tela com uma arte gerada por inteligência artificial simulando o mural da Netflix, e engatilhamos as transições de altura e opacidade (Transitions de Vue). Quando busca, essa arte some e o Form engole a tela:
+Fiz mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionei uma "Sensação Especial". Se não existe pesquisa, ocupo o vazio da tela com uma arte gerada por inteligência artificial simulando o mural da Netflix, e engatilho as transições de altura e opacidade (Transitions de Vue). Quando busca, essa arte some e o Form engole a tela:
 
 ```vue
 <template>
@@ -133,11 +133,11 @@ Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos uma "
 </style>
 ```
 
-## Passo 6: O `<keep-alive>` Mágico e O Botão Voltar
+## 6. O `<keep-alive>` Mágico e O Botão Voltar
 
 Um dos grandes desafios no estado de busca em SPAs: manter a tela de resultados idêntica ao que foi deixado antes de abrir um vídeo. Se você for no YouTube oficial e clicar em Voltar, **tudo continua montado onde você deixou**. Se as rotas primitivas fossem utilizadas para re-renderizar o componente do zero, a lista zeraria e consumiria _outra_ request dispendiosa da API.
 
-Nossa solução brutal: Envelopamos nosso sistema principal numa marcação estática `<keep-alive>`.
+Minha solução: Envelopei o sistema principal numa marcação estática `<keep-alive>`.
 Ao clicar em Voltar na view do vídeo, o Vue "descongela" o HTML inteiro de buscas na exata distância de rolagem que estava antes!
 
 ```vue
@@ -154,12 +154,12 @@ Ao clicar em Voltar na view do vídeo, o Vue "descongela" o HTML inteiro de busc
 </template>
 ```
 
-## Passo 7: CI/CD no Github Actions (Deploy)
+## 7. CI/CD no Github Actions (Deploy)
 
-Por fim, não basta estar local. Construímos o pipeline `.github/workflows/deploy.yml`. Toda vez que o comando `git push` é engatilhado por nós com um commit, a nossa infraestrutura envia para a Vercel/Github Pages.
+Por fim, não basta estar local. Construí o pipeline `.github/workflows/deploy.yml`. Toda vez que o comando `git push` é engatilhado por mim com um commit, a infraestrutura envia para a Vercel/Github Pages.
 
-Configuramos "Grupos de Concorrência" (`concurrency: pages`), bloqueios de histórico do `.env` oculto, e a disponibilização de Segredos de Build de forma invisível. Um Deploy automatizado garantindo as boas práticas na nuvem!
+Configurei "Grupos de Concorrência" (`concurrency: pages`), bloqueios de histórico do `.env` oculto, e a disponibilização de Segredos de Build de forma invisível. Um Deploy automatizado garantindo as boas práticas na nuvem!
 
 ---
 
-💡 _Gostou desta jornada passo a passo? Grande parte desses códigos não caberia aqui. Explore em profundidade a nossa pasta `/src` do repositório para inspecionar os loops de paginação dupla, e os tratamentos de Array do Batch de vídeos!_
+💡 _Gostou desta jornada passo a passo? Grande parte desses códigos não caberia aqui. Explore em profundidade a pasta `/src` do repositório para inspecionar os loops de paginação dupla, e os tratamentos de Array do Batch de vídeos!_

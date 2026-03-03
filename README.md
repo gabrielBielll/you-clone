@@ -1,16 +1,15 @@
-# Acesse a aplicação em: link-para-githubpages-da-aplicação (em breve)
+# YouTube Clone
 
-Este projeto consome e interage com as principais listagens e detalhes da **YouTube Data API v3**.
+Bem-vindo ao clone do YouTube, um projeto construído em Vue para interagir com a **YouTube Data API v3**.
 
-## 🚀 Como Rodar o Projeto
+## 0. Requisitos para iniciar
 
-### Pré-requisitos
+Node.js: Instale a versão v18 ou superior.
 
-- Node.js (v18+)
+## 1. Primeiros passos
 
-### 1. Instalação e Configuração
-
-Clone o repositório e rode os seguintes passos:
+Clonando o projeto
+Clone o projeto em um diretório e navegue via terminal de comando até a raiz do projeto.
 
 ```bash
 # 1. Instale as dependências
@@ -22,30 +21,28 @@ cp .env.example .env
 
 **Importante:** Gere sua API KEY em [Google Cloud Console](https://console.cloud.google.com/) ativando a `YouTube Data API v3` e coloque em seu `.env` na chave `VITE_YOUTUBE_API_KEY`.
 
-### 2. Rodar a Aplicação
+## 2. Rodar a Aplicação
 
 ```bash
-# Iniciando o servidor de desenvolvimento
+# Iniciando o servidor de desenvolvimento localmente
 npm run dev
 ```
 
 Acesse no browser: `http://localhost:5173`.
 
-### 3. Rodar os Testes Unitários
+## 3. Rodar os Testes Unitários
 
-Implementei uma suíte focada na Store (regras de negócio de busca, acréscimos de paginação e error handling API).
+Optei por implementar uma suíte focada na Store (regras de negócio de busca, acréscimos de paginação e error handling API).
 
 ```bash
 npm run test
 ```
 
----
+## 4. Estrutura do projeto & Arquitetura
 
-## 🛠️ Relatório Técnico & Arquitetura
+Preparei um documento bônus para mostrar o raciocínio por trás da arquitetura. Acesse meu [Hands-on Tutorial & Case Study](HANDS_ON_TUTORIAL.md) para explorar o passo a passo da construção técnica.
 
-> **💡 Interessante:** preparei um documento bônus para mostrar o raciocínio por trás da arquitetura. Acesse o nosso [Hands-on Tutorial & Case Study](HANDS_ON_TUTORIAL.md) para explorar o passo a passo da construção técnica do zero.
-
-Visando um código de fácil manutenção, tipado, testável e de alta performance, o desenvolvimento foi baseado nas seguintes ideias:
+Visando um código de fácil manutenção, tipado, testável e de alta performance, baseei o desenvolvimento nas seguintes ideias:
 
 ### Stack Tecnológico:
 
@@ -58,20 +55,20 @@ Visando um código de fácil manutenção, tipado, testável e de alta performan
 
 ### Observações Funcionais (Edge Cases)
 
-#### 1. "O Caso do Deslike"
+#### "O Caso do Deslike"
 
 Acompanhando as diretrizes e evolução de APIs do mercado: **O Youtube depreciou o método de retorno de Dislikes de suas requisições públicas de busca (`/videos?part=statistics`) desde as mais recentes rodadas de atualização sob políticas de "proteção ao criador/deslike massivo".**
-Ainda que a contagem de _Dislike_ original não retorne pelo `part=statistics` como antigamente, optou-se por adicionar uma versão visual do botão na interface para manter a fidelidade e a coerência com o layout original.
+Ainda que a contagem de _Dislike_ original não retorne pelo `part=statistics` como antigamente, optei por adicionar uma versão visual do botão na interface para manter a fidelidade e a coerência com o layout original.
 
-#### 2. Responsividade Mobile-First
+#### Responsividade Mobile-First
 
-Todo o Grid baseado em flexbox de `12-colunas` usando classes como `xs`, `sm`, `md` e `lg` foi desenvolvido para garantir que o _VideoCard_ escorra responsivamente desde smartphones de (320px) com Cards expandidos no 100% de block, até desktops ultrawides que apresentam até 4 ou 5 colunas de forma graciosa. E o Player via _iframe_ utiliza truques modernos CSS (`padding-bottom: 56.25%`) para suportar forçadamente qualquer _resize_ de tela no aspect _16:9_.
+Desenvolvi todo o Grid baseado em flexbox de `12-colunas` usando classes como `xs`, `sm`, `md` e `lg` para garantir que o _VideoCard_ escorra responsivamente desde smartphones de (320px) com Cards expandidos no 100% de block, até desktops ultrawides que apresentam até 4 ou 5 colunas de forma graciosa. E o Player via _iframe_ utiliza truques modernos CSS (`padding-bottom: 56.25%`) para suportar forçadamente qualquer _resize_ de tela no aspect _16:9_.
 
 ### 🌟 Funcionalidades Avançadas
 
 Além do escopo original do clone padrão, pensei nas seguintes soluções para demonstrar escalabilidade, UX e domínio de Stores:
 
-- **Paginação Dupla Inteligente e Laços Transparentes**: O endpoint de `/search` do YouTube costuma poluir buscas genéricas devolvendo apenas Shorts (`videoDuration='short'`). A nossa `Pinia Store` foi recriada usando uma "Paginação com Garantia Mínima". Um laço `while` assíncrono trabalha em segundo plano esvaziando a API repetidas vezes até conseguir separar nativamente **no mínimo 6 vídeos longos** para alimentar exclusivamente o painel infinito principal, garantindo que o seu _Scroll_ de mouse evite esbarrar em blocos vazios. -**Carrossel Nativo e Requisição Restrita**: Para as prateleiras do topo da página ("Shorts"), nós disparamos buscas exclusivas (`loadMoreShorts()`) injetando a flag estrita `videoDuration="short"` da API Google. Dessa forma, ela nos devolve apenas vídeos orgânicos de baixo tempo, renderizados num componente Vue horizontal exclusivo respeitando _aspect-ratio_ mobile 9:16. E tudo isso com _tokens_ isolados na memória.
-- **Micro-Engine de LocalStorage (Histórico Offline)**: Criado para dar vida à Categoria `Histórico` da _Sidebar_. Toda vez que o `<VideoCard>` é clicado ou roteado, o Push não se restringe à URL; ele dispara uma Action da View para o Store injetando uma _Payload JSON_ otimizada na memória persistente liminar do navegador do usuário até o hard-limit de `50` vídeos. Com apenas um clique, o Store "aborta" a conexão HTTP de Categoria e espelha em 0.1ms o cache do seu HD no GridLayout original da tela.
-- **Drawer e Filtros Injetáveis (Router)**: Implementamos o Layout Base do Material (`App.vue` com V-App-Bar e V-Navigation-Drawer dinâmico). Nele as Categorias (Música, Jogos) não são estáticas — elas integram nativamente com o App e engatilham Hooks preenchendo novos Motor-States do Pinia. O menu lateral empurra seu conteúdo como no YouTube Web oficial.
-- **Otimização N+1 Queries (Batch Requesting)**: Para contornar a limitação da API que não envia `duration` nas listagens, o `loadMore` agrupa os 20 IDs encontrados e dispara **uma única** segunda viajação na rede na API restrita de `contentDetails`. Formatando com funções regex proprietárias o parse ISO 8601 (`PT4M5S` para `04:05`). Isso não queima os limites mensais do Google Cloud Platform!
+- **Paginação Dupla Inteligente e Laços Transparentes**: O endpoint de `/search` do YouTube costuma poluir buscas genéricas devolvendo apenas Shorts (`videoDuration='short'`). Recriei a `Pinia Store` usando uma "Paginação com Garantia Mínima". Um laço `while` assíncrono trabalha em segundo plano esvaziando a API repetidas vezes até conseguir separar nativamente **no mínimo 6 vídeos longos** para alimentar exclusivamente o painel infinito principal, garantindo que o seu _Scroll_ de mouse evite esbarrar em blocos vazios. -**Carrossel Nativo e Requisição Restrita**: Para as prateleiras do topo da página ("Shorts"), nós disparamos buscas exclusivas (`loadMoreShorts()`) injetando a flag estrita `videoDuration="short"` da API Google. Dessa forma, ela nos devolve apenas vídeos orgânicos de baixo tempo, renderizados num componente Vue horizontal exclusivo respeitando _aspect-ratio_ mobile 9:16. E tudo isso com _tokens_ isolados na memória.
+- **Micro-Engine de LocalStorage (Histórico Offline)**: Criei para dar vida à Categoria `Histórico` da _Sidebar_. Toda vez que o `<VideoCard>` é clicado ou roteado, o Push não se restringe à URL; ele dispara uma Action da View para o Store injetando uma _Payload JSON_ otimizada na memória persistente liminar do navegador do usuário até o hard-limit de `50` vídeos. Com apenas um clique, o Store "aborta" a conexão HTTP de Categoria e espelha em 0.1ms o cache do HD no GridLayout original da tela.
+- **Drawer e Filtros Injetáveis (Router)**: Implementei o Layout Base do Material (`App.vue` com V-App-Bar e V-Navigation-Drawer dinâmico). Nele as Categorias (Música, Jogos) não são estáticas — elas integram nativamente com o App e engatilham Hooks preenchendo novos Motor-States do Pinia. O menu lateral empurra seu conteúdo como no YouTube Web oficial.
+- **Otimização N+1 Queries (Batch Requesting)**: Para contornar a limitação da API que não envia `duration` nas listagens, o `loadMore` agrupa os 20 IDs encontrados e dispara **uma única** segunda viajação na rede na API restrita de `contentDetails`. Formatei usando funções regex proprietárias o parse ISO 8601 (`PT4M5S` para `04:05`). Isso não queima os limites mensais da sua key no Google Cloud Platform!
