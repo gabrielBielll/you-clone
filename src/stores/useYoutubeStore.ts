@@ -99,7 +99,7 @@ export const useYoutubeStore = defineStore('youtube', {
       let newShortVideosCount = 0;
 
       try {
-        // Laço Sênior: Força a API paginar silenciosamente até juntar vídeos suficientes!
+        // Força a API paginar silenciosamente até juntar vídeos suficientes!
         while (
           ((this.activeCategory !== 'Shorts' && newNormalVideosCount < 6) ||
            (this.activeCategory === 'Shorts' && newShortVideosCount < 12))

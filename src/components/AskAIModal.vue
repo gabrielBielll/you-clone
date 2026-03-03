@@ -237,18 +237,6 @@ const askQuestion = async (question: string) => {
             style="font-size: 0.7rem !important"
           >
             A IA pode cometer erros. Por isso, é importante checar as respostas.
-            <a href="#" class="text-decoration-underline text-grey"
-              >Saiba mais</a
-            >
-            <div
-              class="d-flex align-center justify-center mt-1 text-grey-lighten-1"
-            >
-              Criado com
-              <v-icon size="small" class="mx-1" color="#a78ce6"
-                >mdi-star-four-points</v-icon
-              >
-              Gemini ↗
-            </div>
           </div>
         </div>
       </v-card-text>

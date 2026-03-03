@@ -1,6 +1,6 @@
 # 🛠️ Hands-on Tutorial: Construindo o YouTube Clone
 
-Bem-vindo ao guia de construção passo a passo deste projeto! Este documento detalha as decisões de engenharia, os principais códigos e o fluxo de raciocínio que deram origem ao nosso clone do YouTube, atendendo rigorosamente à especificação técnica da vaga Sênior. Você pode seguir este tutorial para entender como a aplicação foi estruturada desde a sua fundação.
+Bem-vindo ao guia de construção passo a passo deste projeto! Este documento detalha as decisões de engenharia, os principais códigos e o fluxo de raciocínio que deram origem ao nosso clone do YouTube, atendendo rigorosamente à especificação técnica da vaga. Você pode seguir este tutorial para entender como a aplicação foi estruturada desde a sua fundação.
 
 ## Passo 1: Inicializando o Projeto (Vite + Vue 3 + TypeScript)
 
@@ -16,7 +16,7 @@ npm install
 
 ## Passo 2: Configurando o Vuetify 3 (Material Design)
 
-As regras de negócio exigiam explicitamente a utilização de **Google Material Design**. Ao invés de criarmos CSS do zero sem padronização, adotamos o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhamos um motor de grid e acessibilidade imbatíveis.
+As regras de negócio exigiam explicitamente a utilização de **Google Material Design**. Ao invés de criarmos CSS do zero sem padronização, optei por utilizar o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhamos um motor de grid e acessibilidade imbatíveis.
 
 No arquivo `src/plugins/vuetify.ts`, injetamos globalmente nosso layout forçando o **Dark Mode** com a verdadeira paleta de cores do YouTube real:
 
@@ -46,7 +46,7 @@ export default createVuetify({
 
 ## Passo 3: Engenharia de API (Axios + Interceptors)
 
-Num contexto Sênior, as chaves de API jamais devem "passear" soltas pela View ou pela Store. Centralizamos as requisições em um serviço base (`src/services/api.ts`) provido pelo Axios.
+Num contexto profissional, as chaves de API jamais devem "passear" soltas pela View ou pela Store. Centralizamos as requisições em um serviço base (`src/services/api.ts`) provido pelo Axios.
 
 A mágica é usar um _Interceptor_ dinâmico. Toda chamada feita pelo nosso Front-End injeta silenciosamente a nossa Key segura a partir do ambiente local (`.env`), deixando as rotinas de busca completamente limpas.
 
@@ -110,7 +110,7 @@ export const useYoutubeStore = defineStore("youtube", {
 
 O edital mencionava um desafio interessante: Ter o campo de pesquisa no meio da tela que, após clicar em pesquisar, se deslocasse magicamente para o topo e não voltasse mais dali.
 
-Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos a "Sensação Sênior". Se não existe pesquisa, ocupamos o vazio da tela com uma arte gerada por inteligência artificial simulando o mural da Netflix, e engatilhamos as transições de altura e opacidade (Transitions de Vue). Quando busca, essa arte some e o Form engole a tela:
+Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos uma "Sensação Especial". Se não existe pesquisa, ocupamos o vazio da tela com uma arte gerada por inteligência artificial simulando o mural da Netflix, e engatilhamos as transições de altura e opacidade (Transitions de Vue). Quando busca, essa arte some e o Form engole a tela:
 
 ```vue
 <template>
@@ -158,7 +158,7 @@ Ao clicar em Voltar na view do vídeo, o Vue "descongela" o HTML inteiro de busc
 
 Por fim, não basta estar local. Construímos o pipeline `.github/workflows/deploy.yml`. Toda vez que o comando `git push` é engatilhado por nós com um commit, a nossa infraestrutura envia para a Vercel/Github Pages.
 
-Configuramos "Grupos de Concorrência" (`concurrency: pages`), bloqueios de histórico do `.env` oculto, e a disponibilização de Segredos de Build de forma invisível. Um Deploy automatizado garantindo as boas práticas Sêniors na nuvem!
+Configuramos "Grupos de Concorrência" (`concurrency: pages`), bloqueios de histórico do `.env` oculto, e a disponibilização de Segredos de Build de forma invisível. Um Deploy automatizado garantindo as boas práticas na nuvem!
 
 ---
 

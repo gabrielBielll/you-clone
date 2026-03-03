@@ -200,7 +200,7 @@ const normalVideos = computed(() => store.videos);
                   <ShortVideoCard :video="video" />
                 </v-slide-group-item>
 
-                <!-- Botão Dinâmico "Carregar Mais Shorts (Paginação com Token Independente Sênior)" -->
+                <!-- Botão Dinâmico "Carregar Mais Shorts (Paginação com Token Independente)" -->
                 <v-slide-group-item>
                   <div
                     class="d-flex align-center justify-center mx-2"
