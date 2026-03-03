@@ -1,6 +1,6 @@
-# Teste Vertex: Front-End (YouTube Clone)
+# Teste a aplicação em: link-para-githubpages-da-aplicação (em breve)
 
-Este projeto foi construído para o processo seletivo de vaga **Frontend Sênior** da **Vertex Digital**. Ele consome e interage com as principais listagens e detalhes da **YouTube Data API v3**.
+Este projeto consome e interage com as principais listagens e detalhes da **YouTube Data API v3**.
 
 ## 🚀 Como Rodar o Projeto
 
@@ -33,7 +33,7 @@ Acesse no browser: `http://localhost:5173`.
 
 ### 3. Rodar os Testes Unitários
 
-Foi implementada uma suíte focada na Store (regras de negócio de busca, acréscimos de paginação e error handling API).
+Implementei uma suíte focada na Store (regras de negócio de busca, acréscimos de paginação e error handling API).
 
 ```bash
 npm run test
@@ -41,19 +41,19 @@ npm run test
 
 ---
 
-## 🛠️ Relatório Técnico & Arquitetura (Visão Sênior)
+## 🛠️ Relatório Técnico & Arquitetura
 
-> **💡 Novidade:** Preparamos um documento bônus para comprovar o raciocínio por trás da arquitetura. Acesse o nosso [Hands-on Tutorial & Case Study](HANDS_ON_TUTORIAL.md) para explorar o passo a passo da construção técnica do zero, recheado com trechos de código explicativos!
+> **💡 Interessante:** preparei um documento bônus para mostrar o raciocínio por trás da arquitetura. Acesse o nosso [Hands-on Tutorial & Case Study](HANDS_ON_TUTORIAL.md) para explorar o passo a passo da construção técnica do zero.
 
-Visando um código de fácil manutenção, tipado, testável e de alta performance, baseamos o desenvolvimento nas seguintes premissas e tecnologias:
+Visando um código de fácil manutenção, tipado, testável e de alta performance, o desenvolvimento foi baseado nas seguintes ideias:
 
 ### Stack Tecnológico:
 
 - **Vue 3 (Composition API / `<script setup>`)**: Preferível ao Options API tradicional dos sistemas legados de Vue 2, permitindo melhor modularidade (composable) e suporte limpo ao TypeScript.
-- **Vite**: Para builds extremamente rápidos comparados ao obsoleto Vue CLI ou Webpack puro.
+- **Vite**: Para builds mais rápidos.
 - **TypeScript**: Estrita tipagem do Payload do complexo ecossistema do YouTube. Isso previne centenas de erros de _runtime_.
-- **Pinia**: Escolhido no lugar do Vuex (oficialmente descontinuado no Vue 3 pela equipe core). **Decisão de UX importante**: O Pinia mantém o estado de vídeos renderizados em cache com o Token de Paginação; assim, usar o botão "Voltar" a partir da tela de "Detalhes do Vídeo" não regera uma requisição cara para a API — o _scroll_ e os componentes são revistos liminarmente no estado e páginação que foram deixados na busca, criando uma fluidez real de _Mobile app_.
-- **Vuetify 3**: Cumprindo as regras estritas da especificação pedia sobre _Google Material Design_, o framework proveu grid dinâmico _Mobile-First_, com utilitários de display integrados.
+- **Pinia**: Dado que o vuex foi descontinuado optei utilizar o pinia, que mantém o estado de vídeos renderizados em cache com o Token de Paginação; assim, usar o botão "Voltar" a partir da tela de "Detalhes do Vídeo" não regera uma requisição cara para a API — o _scroll_ e os componentes são revistos liminarmente no estado e páginação que foram deixados na busca, criando uma fluidez real de _Mobile app_.
+- **Vuetify 3**: Cumprindo as solicitações de construção baseada no _Google Material Design_, o framework proveu grid dinâmico _Mobile-First_, com utilitários de display integrados.
 - **Axios**: Centralizando requisições via instância global controlada com interceptadores dinâmicos para injetar a API Key do `.env`.
 
 ### Observações Funcionais (Edge Cases)
@@ -67,12 +67,11 @@ Ainda que a contagem de _Dislike_ original não retorne pelo `part=statistics` c
 
 Todo o Grid baseado em flexbox de `12-colunas` usando classes como `xs`, `sm`, `md` e `lg` foi desenvolvido para garantir que o _VideoCard_ escorra responsivamente desde smartphones de (320px) com Cards expandidos no 100% de block, até desktops ultrawides que apresentam até 4 ou 5 colunas de forma graciosa. E o Player via _iframe_ utiliza truques modernos CSS (`padding-bottom: 56.25%`) para suportar forçadamente qualquer _resize_ de tela no aspect _16:9_.
 
-### 🌟 Funcionalidades Avançadas (Showcase Sênior)
+### 🌟 Funcionalidades Avançadas
 
-Além do escopo original do clone padrão, arquitetamos as seguintes soluções para demonstrar escalabilidade robusta, UX excepcional e domínio profundo de Stores:
+Além do escopo original do clone padrão, pensei nas seguintes soluções para demonstrar escalabilidade, UX e domínio de Stores:
 
-- **Paginação Dupla Inteligente e Laços Transparentes**: O endpoint de `/search` do YouTube costuma poluir buscas genéricas devolvendo apenas Shorts (`videoDuration='short'`). A nossa `Pinia Store` foi recriada usando uma "Paginação com Garantia Mínima". Um laço `while` assíncrono trabalha em segundo plano esvaziando a API repetidas vezes até conseguir separar nativamente **no mínimo 6 vídeos longos** para alimentar exclusivamente o painel infinito principal, garantindo que o seu _Scroll_ de mouse nunca esbarre em blocos vazios!
-- **Carrossel Nativo e Requisição Restrita**: Para as prateleiras do topo da página ("Shorts"), nós disparamos buscas exclusivas (`loadMoreShorts()`) injetando a flag estrita `videoDuration="short"` da API Google. Dessa forma, ela nos devolve apenas vídeos orgânicos de baixo tempo, renderizados num componente Vue horizontal exclusivo respeitando _aspect-ratio_ mobile 9:16. E tudo isso com _tokens_ isolados na memória.
+- **Paginação Dupla Inteligente e Laços Transparentes**: O endpoint de `/search` do YouTube costuma poluir buscas genéricas devolvendo apenas Shorts (`videoDuration='short'`). A nossa `Pinia Store` foi recriada usando uma "Paginação com Garantia Mínima". Um laço `while` assíncrono trabalha em segundo plano esvaziando a API repetidas vezes até conseguir separar nativamente **no mínimo 6 vídeos longos** para alimentar exclusivamente o painel infinito principal, garantindo que o seu _Scroll_ de mouse evite esbarrar em blocos vazios. -**Carrossel Nativo e Requisição Restrita**: Para as prateleiras do topo da página ("Shorts"), nós disparamos buscas exclusivas (`loadMoreShorts()`) injetando a flag estrita `videoDuration="short"` da API Google. Dessa forma, ela nos devolve apenas vídeos orgânicos de baixo tempo, renderizados num componente Vue horizontal exclusivo respeitando _aspect-ratio_ mobile 9:16. E tudo isso com _tokens_ isolados na memória.
 - **Micro-Engine de LocalStorage (Histórico Offline)**: Criado para dar vida à Categoria `Histórico` da _Sidebar_. Toda vez que o `<VideoCard>` é clicado ou roteado, o Push não se restringe à URL; ele dispara uma Action da View para o Store injetando uma _Payload JSON_ otimizada na memória persistente liminar do navegador do usuário até o hard-limit de `50` vídeos. Com apenas um clique, o Store "aborta" a conexão HTTP de Categoria e espelha em 0.1ms o cache do seu HD no GridLayout original da tela.
 - **Drawer e Filtros Injetáveis (Router)**: Implementamos o Layout Base do Material (`App.vue` com V-App-Bar e V-Navigation-Drawer dinâmico). Nele as Categorias (Música, Jogos) não são estáticas — elas integram nativamente com o App e engatilham Hooks preenchendo novos Motor-States do Pinia. O menu lateral empurra seu conteúdo como no YouTube Web oficial.
 - **Otimização N+1 Queries (Batch Requesting)**: Para contornar a limitação da API que não envia `duration` nas listagens, o `loadMore` agrupa os 20 IDs encontrados e dispara **uma única** segunda viajação na rede na API restrita de `contentDetails`. Formatando com funções regex proprietárias o parse ISO 8601 (`PT4M5S` para `04:05`). Isso não queima os limites mensais do Google Cloud Platform!
