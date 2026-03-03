@@ -104,16 +104,6 @@ const formattedDescription = computed(() => {
     <!-- Video Details Content -->
     <v-row v-else-if="video">
       <v-col cols="12" lg="8" offset-lg="2" xl="8" offset-xl="2">
-        <!-- Botão explícito de Voltar solicitado no teste -->
-        <v-btn
-          variant="text"
-          prepend-icon="mdi-arrow-left"
-          class="mb-4 text-none text-body-1 font-weight-bold"
-          @click="goBack"
-          rounded="pill"
-        >
-          Voltar para os resultados
-        </v-btn>
         <!-- Iframe Player - Proporção 16:9 forçada -->
         <div
           class="video-player-container bg-black elevation-10 rounded-lg overflow-hidden"
