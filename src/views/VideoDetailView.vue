@@ -126,7 +126,9 @@ const formattedDescription = computed(() => {
 
         <!-- Video Title -->
         <h1
-          class="text-h5 font-weight-bold mt-4 mb-2 text-wrap"
+          class="video-title font-weight-bold mt-4 mb-2 text-wrap cursor-pointer"
+          :class="{ 'title-collapsed': !showFullDescription }"
+          @click="showFullDescription = !showFullDescription"
           v-html="video.snippet.title"
         ></h1>
 
@@ -147,28 +149,41 @@ const formattedDescription = computed(() => {
             <!-- Botão de IA "Perguntar" (Gemini) -->
             <v-btn
               variant="tonal"
-              icon="mdi-google-gemini"
               class="mr-2"
               color="#b594ff"
-              style="background-color: rgba(181, 148, 255, 0.15) !important"
+              height="36"
+              width="36"
+              style="background-color: rgba(181, 148, 255, 0.15) !important; border-radius: 50%; padding: 0; min-width: 0;"
               @click="showAIModal = true"
-            ></v-btn>
+            >
+              <v-icon icon="mdi-star-four-points" size="20"></v-icon>
+            </v-btn>
 
             <!-- Grupo de Like / Dislike idêntico ao "Compartilhar" -->
-            <v-btn-group variant="tonal" divided rounded="pill" class="mr-2 align-center">
+            <v-btn-group
+              variant="tonal"
+              divided
+              rounded="pill"
+              class="mr-2"
+              style="height: 36px; align-items: stretch; overflow: hidden;"
+            >
               <v-btn
                 prepend-icon="mdi-thumb-up-outline"
                 class="px-4"
+                height="36"
+                style="margin: 0;"
               >
-                <span class="font-weight-bold ml-1">{{
+                <span class="font-weight-bold">{{
                   formatCompactNumber(statistics.likeCount)
                 }}</span>
               </v-btn>
 
               <v-btn
-                icon="mdi-thumb-down-outline"
-                class="px-4"
+                class="px-3"
+                height="36"
+                style="margin: 0; min-width: 0;"
               >
+                <v-icon icon="mdi-thumb-down-outline" size="20"></v-icon>
               </v-btn>
             </v-btn-group>
 
@@ -177,6 +192,7 @@ const formattedDescription = computed(() => {
               rounded="pill"
               prepend-icon="mdi-share-outline"
               class="mr-2 text-capitalize"
+              height="36"
             >
               Compartilhar
             </v-btn>
@@ -244,6 +260,26 @@ const formattedDescription = computed(() => {
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.video-title {
+  font-size: 1.125rem !important; /* 18px */
+  line-height: 1.3;
+}
+
+@media (min-width: 960px) {
+  .video-title {
+    font-size: 1.5rem !important; /* 24px */
+  }
+}
+
+.title-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  line-clamp: 1;
   overflow: hidden;
   text-overflow: ellipsis;
 }
