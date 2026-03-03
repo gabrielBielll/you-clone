@@ -1,6 +1,6 @@
 # 🛠️ Hands-on Tutorial: Construindo o YouTube Clone
 
-Bem-vindo ao guia de construção passo a passo deste projeto! Este documento detalha as decisões de engenharia, os principais códigos e o fluxo de raciocínio que deram origem ao nosso clone do YouTube, atendendo rigorosamente à especificação técnica da vaga. Você pode seguir este tutorial para entender como a aplicação foi estruturada desde a sua fundação.
+Bem-vindo ao guia de construção passo a passo deste projeto! Este documento detalha as decisões de engenharia, os principais códigos e o fluxo de raciocínio que deram origem ao clone do YouTube, atendendo a requisitos modernos e escaláveis. Você pode seguir este tutorial para entender como a aplicação foi estruturada desde a sua fundação.
 
 ## Passo 1: Inicializando o Projeto (Vite + Vue 3 + TypeScript)
 
@@ -16,7 +16,7 @@ npm install
 
 ## Passo 2: Configurando o Vuetify 3 (Material Design)
 
-As regras de negócio exigiam explicitamente a utilização de **Google Material Design**. Ao invés de criarmos CSS do zero sem padronização, optei por utilizar o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhamos um motor de grid e acessibilidade imbatíveis.
+Para seguir o **Google Material Design** de maneira consistente, e visando não criar CSS puramente do zero sem padronização, optou-se por utilizar o ecossistema maduro do **Vuetify 3**. Além da garantia do Material, ganhamos um motor de grid e acessibilidade imbatíveis.
 
 No arquivo `src/plugins/vuetify.ts`, injetamos globalmente nosso layout forçando o **Dark Mode** com a verdadeira paleta de cores do YouTube real:
 
@@ -108,7 +108,7 @@ export const useYoutubeStore = defineStore("youtube", {
 
 ## Passo 5: UX Avançada: Hero Style Netflix & Animação Css
 
-O edital mencionava um desafio interessante: Ter o campo de pesquisa no meio da tela que, após clicar em pesquisar, se deslocasse magicamente para o topo e não voltasse mais dali.
+Um desafio interessante de UI implementado neste projeto foi: Ter o campo de pesquisa centralizado no meio da tela que, após uma busca, se desloca de forma fluida para o topo.
 
 Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos uma "Sensação Especial". Se não existe pesquisa, ocupamos o vazio da tela com uma arte gerada por inteligência artificial simulando o mural da Netflix, e engatilhamos as transições de altura e opacidade (Transitions de Vue). Quando busca, essa arte some e o Form engole a tela:
 
@@ -135,7 +135,7 @@ Fizemos mais que isso, no `AppSearchBar.vue` e `HomeView.vue`, adicionamos uma "
 
 ## Passo 6: O `<keep-alive>` Mágico e O Botão Voltar
 
-A especificação ordenava: "A tela de detalhes de vídeo deve ter um botão de voltar para os resultados com a página ativa". E é aqui que os Desenvolvedores Júnior acabam reprovados: Se você for no YouTube oficial e der Voltar, **tudo continua montado onde você deixou**. Se você fizer isso com rotas primitivas, a lista zera e consome _outra_ request da API cara do YouTube.
+Um dos grandes desafios no estado de busca em SPAs: manter a tela de resultados idêntica ao que foi deixado antes de abrir um vídeo. Se você for no YouTube oficial e clicar em Voltar, **tudo continua montado onde você deixou**. Se as rotas primitivas fossem utilizadas para re-renderizar o componente do zero, a lista zeraria e consumiria _outra_ request dispendiosa da API.
 
 Nossa solução brutal: Envelopamos nosso sistema principal numa marcação estática `<keep-alive>`.
 Ao clicar em Voltar na view do vídeo, o Vue "descongela" o HTML inteiro de buscas na exata distância de rolagem que estava antes!

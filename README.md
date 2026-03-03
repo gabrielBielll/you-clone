@@ -1,4 +1,4 @@
-# Teste a aplicação em: link-para-githubpages-da-aplicação (em breve)
+# Acesse a aplicação em: link-para-githubpages-da-aplicação (em breve)
 
 Este projeto consome e interage com as principais listagens e detalhes da **YouTube Data API v3**.
 
@@ -60,8 +60,8 @@ Visando um código de fácil manutenção, tipado, testável e de alta performan
 
 #### 1. "O Caso do Deslike"
 
-Em requisição formal desta documentação, e mantendo acompanhamento das diretrizes e evolução de APIs do mercado: **O Youtube depreciou o método de retorno de Dislikes de suas requisições públicas de busca (`/videos?part=statistics`) desde as mais recentes rodadas de atualização sob políticas de "proteção ao criador/deslike massivo".**
-Ainda que a contagem de _Dislike_ original não retorne pelo `part=statistics` como publicamente visou um dia, adicionei a versão **Mockada (visual)** do botão pela UI, acompanhando a evolução orgânica imposta pelos Designers Originais do material design onde a UX precisa indicar a possibilidade, mesmo que o valor do contador seja omitido publicamente.
+Acompanhando as diretrizes e evolução de APIs do mercado: **O Youtube depreciou o método de retorno de Dislikes de suas requisições públicas de busca (`/videos?part=statistics`) desde as mais recentes rodadas de atualização sob políticas de "proteção ao criador/deslike massivo".**
+Ainda que a contagem de _Dislike_ original não retorne pelo `part=statistics` como antigamente, optou-se por adicionar uma versão visual do botão na interface para manter a fidelidade e a coerência com o layout original.
 
 #### 2. Responsividade Mobile-First
 
