@@ -113,7 +113,29 @@ Antes de iniciar a escrita de qualquer linha de código, mapeei rigorosamente o 
 - [x] Inteligência Artificial: Modal interativo (Ask AI) operando contexto de vídeo com a API do Gemini.
 - [x] Pipeline de CI/CD: Automação de deploy configurada via GitHub Actions.
 
-## 1. Setup Inicial e Definição da Arquitetura
+## 1. A Tríade Arquitetural Sênior (Hexagonal, MVVM e Atomic Design)
+
+Em aplicações de larga escala Front-end, o maior perigo é acoplar regras complexas de negócio à camada de exibição (`.vue`). Para evitar a chamada "Spaghetti Code" e propiciar testes estritos, orquestrei estrategicamente uma união destas três arquiteturas consagradas no mercado:
+
+### ⚛️ Atomic Design (Para a Camada Visual / UI)
+
+Todos os arquivos em `src/components/` e `src/views/` foram projetados sob uma ótica atômica comportamental. Nós temos componentes estritamente "burros" (_Dumb Components_ como `VideoCard.vue` e `ShortVideoCard.vue` assumindo o papel flexível de Átomos e Moléculas) que não geram requisições de rede, apenas reagem visualmente de acordo com as _Props_ entregues pelo parent sem efeitos colaterais. Acima deles, agindo como blocos agregadores estruturais de página, temos os _Smart Components_ como `HomeView.vue` (Páginas em Organismos) orquestrando componentes e layout perante regras mutáveis interligadas na Store.
+
+### 🎭 MVVM - Model-View-ViewModel (Para o Gerenciamento de Estado)
+
+Em vez de permitir que os arquivos de layout (_View_) acionem ou sofram gargalos advindos da latência da estrutura de I/O em rede e banco do modelo final (_Model_), consolidei o **Pinia** (`useYoutubeStore`) como a figura isolada do nosso super _ViewModel_. O Pinia atua como maestro assíncrono guardiador contendo _arrays_ cacheados, manipulando os cursores paralelos restritos de avanço (`nextPageToken`), tratando exceções brutas padronizadas em massa (como o clássico _Rate Limit Quota Exceeded_ da API restritiva nativa do Cloud) e apenas despachando o aviso inofensivo às views via State-Observer pattern: _"Interface Visual, a variável reativa mudou as propriedades, remonte e pinte-se imediatamente com o Fallback adequado"_.
+
+### ⬡ Arquitetura Hexagonal / Ports & Adapters (Core de Integrações Externas)
+
+Para separar isoladamente a lógica do _Framework_ UI em relação aos acessos de persistência/tráfego externos e ser imune às regras do Google Cloud, desenhei sob pilares de "Dependency Inversion" o padrão Clean da Arquitetura de Portas e Adaptadores:
+
+- **Ports (src/domain/ports/):** Um contrato fechado (interface abstracta pura em TS `IYoutubeRepository.ts`) delimitando os estritos protocolos obrigatórios base do sistema não importando a origem. Seu único papel é blindar nossa inteligência.
+- **Adapters (src/adapters/outbound/):** Único ponto infectado de bibliotecas puras e restritas de tráfego I/O REST (Configured `GoogleYoutubeAdapter.ts`). Se em momento próximo a API do Youtube depreciar ou precisarmos conectar ao _Vimeo_, absolutamente nada visual do projeto quebra; codificamos independentemente um novo Adapter que atenda as normas contratuais da _Port_ e reconectamos em meio minuto.
+- **DI Container (src/di/):** O Contêiner de inversão amarra as requisições gerando um desacoplamento elegante em _runtime_ da injeção do Adapter final em relação a quem necessita dele na Store, tornando os consumidores finais ignorantes transparentes.
+
+---
+
+## 2. Setup Inicial da Base de Componentes
 
 Para garantir uma base sólida, escalável e com excelente DX (Developer Experience), inicializei o projeto utilizando **Vite** em conjunto com **Vue 3** (Composition API) e **TypeScript**.
 
@@ -137,7 +159,7 @@ A estrutura de pastas foi rigorosamente dividida baseada no princípio de Separa
 - `src/types/`: _Single Source of Truth_ para tipagens. Interfaces TypeScript que mapeiam os JSONs completos da API do Google.
 - `src/views/`: _Smart Components_. Páginas que injetam dependências, acessam Stores e orquestram a iteração com os menores componentes.
 
-## 2. Configurando o Vuetify 3 (Material Design)
+## 3. Configurando o Vuetify 3 (Material Design)
 
 Para seguir o **Google Material Design** de maneira consistente, e visando não criar CSS puramente do zero sem padronização, optei por utilizar o ecossistema maduro do **Vuetify 3**. A camada de UI permite focar na lógica de negócio ao invés de reinventar componentes básicos de layout. Além da garantia do Material, ganhei um motor de grid e acessibilidade avançados.
 
@@ -167,13 +189,13 @@ export default createVuetify({
 });
 ```
 
-## 3. A Camada de Serviços, Segurança e Integração HTTP
+## 4. Camada de Segurança e Interceptor HTTP
 
-A comunicação com APIs de terceiros exige cautela. Inserir chamadas `fetch` soltas dentro de componentes Vue cria acoplamento alto, dificulta testes e é perigoso para as chaves de acesso.
+A comunicação com APIs de terceiros exige cautela impecável em infraestruturas maiores para não gerar chaves soltas em escudos do cliente web.
 
-### A Instância do Axios
+### A Instância do Axios Centralizada
 
-Criei uma abstração limpa configurando um cliente HTTP centralizado. Isso garante que a URL base e a chave de API (protegida via variável de ambiente) não andem "soltas" pela Store, sendo injetadas automaticamente em todas as chamadas por um _Interceptor_.
+Criei uma abstração HTTP interceptadora isolada de configurações. Isso garante que as credenciais providas ao serviço e o cabeçalho base da API (protegidos silenciosamente via variável local de ambiente global `.env`) não sejam lidos deliberadamente dentro das árvores do DOM, injetando a interceptação (como _middleware backend_ em ponte) nativamente escondida apenas na saída do funil das requisições disparadas por Adaptadores isolados.
 
 **Arquivo:** `src/services/api.ts`
 
@@ -184,48 +206,17 @@ export const api = axios.create({
   baseURL: "https://www.googleapis.com/youtube/v3",
 });
 
-// Interceptor: Antes da request sair, injeto a segurança
+// Interceptor HTTP nativo: Injeta a token secreta dinamicamente antes da Request de payload partir!
 api.interceptors.request.use((config) => {
   config.params = config.params || {};
-  // Injeta a token do ambiente .env sem sujar o código dos componentes!
   config.params.key = import.meta.env.VITE_YOUTUBE_API_KEY;
   return config;
 });
 ```
 
-### O Serviço do YouTube Isolado
+_(Nota Conclusiva Arquitetural: Graças à conversão contundente para Arquitetura Hexagonal relatada pelo primeiro bloco destas especificações, todo o trânsito final estruturado dos GETs poliformes de parâmetros - que antes fixavam-se perigosamente num único e rígido módulo em Service - isola-se em instâncias independentes nas amarras do nosso Adapter Concreto de Protocolos Exitosos `GoogleYoutubeAdapter`)._
 
-Os componentes Vue não precisam saber quais parâmetros a API do Google exige. Eles apenas chamam os métodos de negócio que o módulo exporta.
-
-**Arquivo:** `src/services/youtube.service.ts`
-
-```typescript
-import { api } from "./api";
-import type {
-  YouTubeSearchResponse,
-  YouTubeVideoResponse,
-} from "../types/youtube";
-
-export const youtubeService = {
-  async searchVideos(
-    query: string,
-    pageToken?: string,
-  ): Promise<YouTubeSearchResponse> {
-    const { data } = await api.get("/search", {
-      params: {
-        part: "snippet",
-        q: query,
-        maxResults: 15,
-        pageToken,
-        type: "video",
-      },
-    });
-    return data;
-  },
-};
-```
-
-## 4. O Coração - Gerenciando Estado com Pinia
+## 5. O Coração - Gerenciando Estado Transiente com Pinia e MVVM
 
 O requisito mais complexo exigia que eu propiciasse ao usuário a permanência de busca: ao clicar em "Voltar" na tela de detalhes, ele encontrasse a pesquisa e a listagem de paginação exatamente na posição onde as deixou. A abordagem contundente foi utilizar o **Pinia** (O Store que substituiu o aposentado Vuex) como _Single Source of Truth_.
 
@@ -270,7 +261,7 @@ export const useYoutubeStore = defineStore("youtube", {
 });
 ```
 
-## 5. Construindo a Tela Inicial e Animações de Alta Performance
+## 6. Construindo a Tela Inicial e Animações de Alta Performance
 
 Um desafio de UI desenhado neste projeto foi ter o campo de pesquisa originalmente centralizado no meio da tela no primeiro acesso, de modo que ele não retornasse ao centro nos próximos acessos da mesma pesquisa, ficando restrito ao topo de forma suave.
 
@@ -309,7 +300,7 @@ Fiz mais que o básico. Na `HomeView.vue`, adicionei uma "Sensação Especial". 
 </style>
 ```
 
-## 6. A Tela de Detalhes, Iframes e O `<keep-alive>` Mágico
+## 7. A Tela de Detalhes, Iframes e O `<keep-alive>` Mágico
 
 Na Rota `/video/:id`, a view se encarrega da exibição do embed do player via _iframe_ responsivo e das métricas, formatando a visualização para manter corretamente a proporção geométrica (padding tricks para _16:9_).
 
@@ -332,7 +323,7 @@ Mas como eu frizei no tópico de Estado (Pinia), havia o grande desafio do "Volt
 </template>
 ```
 
-## 7. Indo Além - Arquitetura das Funcionalidades Extras (Diferenciais)
+## 8. Indo Além - Arquitetura das Funcionalidades Extras (Diferenciais Master)
 
 Além do escopo original do clone padrão simples, implementei e desenhei as soluções abaixo para escalar as interações de forma substancial:
 
@@ -381,14 +372,14 @@ actions: {
 **4. Inteligência Artificial Integrada (Ask AI)**
 Dado a alta de Chatbots generativos em plataformas nativas de consumo de videos, integrei a API livre do "Google Gemini Flash 2.5", elaborando em cima o Modal de interação. Quando você abre um Vídeo, eu crio uma camada oculta no Prompt nativo unindo o _Title_ e o _Description_ do criador. Isso abastece os parâmetros para resumos na mosca, gerando respostas incríveis sem precisarmos da custosa "transcrição do aúdio".
 
-## 8. Integração Contínua e Setup de Qualidade (CI/CD e Testes)
+## 9. Integração Contínua e Setup de Qualidade (CI/CD e Testes Unitários Isolados)
 
 Código maduro é código testado e entregue de forma automatizada:
 
 - **Testes Unitários:** Para a suite de testes locais, decidi pelo uso do `Vitest` em lugar do Jest ou pesados Karma/Mocha. O Vitest (com arquivo isolado `useYoutubeStore.spec.ts`) garante que a lógica mental do Store não retroceda as métricas nas próximas manutenções, usando `vi.fn()` para mockar retornos perfeitos do Axios.
 - **CI/CD Pipeline:** Todo ecossistema foi injetado através da Action Github. A aplicação lê meu repositório e atesta que a cada novo _Push_ na ramificação core (`main`), um job autônomo executa as checagens e compõe o bundle estático direcionando-os à uma Branch _Gh-pages_, onde o Github o disponibilizará como site livre para testar.
 
-## 9. Resumo Crítico das Boas Práticas Empregadas
+## 10. Resumo Estruturante Crítico das Boas Práticas Empregadas
 
 - **Princípio de Responsabilidade Única (SRP):** Códigos que fazem apenas uma coisa. O Vue manipula a DOM e escuta as diretivas, a Service do Axios atende as saídas de rede, a Store do Pinia gerencia cache, e os Components reciclam layouts. Essa separação drástica me assegurou um código imune ao fenômeno "spaghetti".
 - **Tipagem Estática Refinada e Contratos:** Apliquei TypeScript nativo em `youtube.d.ts`. Mapeei as instâncias de JSON longas para classes estriadas (_Snippet, Id, Statistics_). A segurança provada por compilador preveniu centenas de exceçòes imprevisíveis de runtime relacionadas a tags malucas do json sem a necessidade do Console log.
