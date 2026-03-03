@@ -45,7 +45,7 @@ const rules = {
     <!-- Hero Text inspired by Netflix -->
     <div v-if="!hasSearched" class="hero-text text-white text-center px-4">
       <h1
-        class="text-h3 text-md-h2 font-weight-black mb-4"
+        class="text-h3 text-md-h2 font-weight-black mb-4 d-none d-sm-block"
         style="line-height: 1.2"
       >
         Vídeos, shorts e muito<br />mais, sem limites
